@@ -1,0 +1,88 @@
+There are three main options:
+1. Manually create a WordPress theme based on your current static HTML site.
+This will require you to get into your code. You will have to access your current site directory via FTP and use your existing code as a starting point. From there you will need to create the necessary files for a WordPress theme and copy bits of code from the WordPress codex. This is fairly simple and straight forward if you have some experience with HTML, CSS, and a bit of PHP.
+2. Install a pre-made theme and simply migrate your content.
+This is probably the best option at the intersection of simplicity and value. Assuming you already have hosting for your current website, you will only need to spend money if you choose to purchase a premium theme. The plugin we will use for importing content is freely available in the official WordPress Plugin Repository.
+3. Paying to have an HTML to WordPress conversion service re-create your site.
+This is the easiest solution, as it doesn’t require you to do much of anything. However it will not do much for familiarizing you with WordPress and the cost will vary depending on who you choose to hire. I won’t be covering this option in the sections below because if this is the route you are interested in, you can simply do a quick search for service providers and they will take care of the rest.
+Preparing for HTML to WordPress Conversion
+
+No matter which route you decide to take below, there are a few things you will want to do before diving in.
+The first is choosing a hosting plan. You’ll want to look over the options that are out there and decide on a package that best fits your needs. Or perhaps you’d like to create a local WordPress installation instead? You can always migrate it to a hosting service later.
+Once you’ve chosen, you will need to install WordPress and log into WP Admin. This is the point at which our two possible paths divide.
+Manually Converting Your Static HTML Site to WordPress
+
+If your goal is to not only get your content from your static HTML site into WordPress but also duplicate your current design, this means you will need to create your own custom theme. Thankfully, that is not as scary as it might sound at first. It only involves creating a few folders and files, a bit of copy and paste, and then uploading the result.
+You’re going to need a code editor such as Sublime or Notepad++ and access to both your HTML site’s directory and your new WordPress install’s directory.
+Step 1: Create a New Theme Folder and Necessary Files
+
+On your desktop, create a new folder to hold your theme files. Name it whatever you’d like your theme to be named.
+Next, create a few files (which all go in your new theme folder) in your code editor. Don’t do anything to them just yet. Just leave them open for further editing.
+Style.css
+Index.php
+header.php
+sidebar.php
+footer.php
+Step 2: Copy Existing CSS Into New Stylesheet
+
+If you’re looking to duplicate a design, this probably means you have at least some CSS that you want to save. So the first file you’re going to want to edit is your Style.css file.
+To begin, add the following to the top of your file.
+/*
+Theme Name: Replace with your Theme's name.
+Theme URI: Your Theme's URI
+Description: A brief description.
+Version: 1.0
+Author: You
+Author URI: Your website address.
+*/
+After this section simply paste your existing CSS below. Save and close the file.
+Step 3: Separate Your Current HTML
+
+Before we get into step three, let me give you a quick note on how WordPress works. WordPress uses PHP to call and retrieve pieces of data from its underlying database. Each file that we’re using in this little tutorial is designed to tell WordPress which part of your site content is to be displayed and where.
+So when I say we are going to “chop up” your existing HTML, what we’re actually doing is simply cutting and pasting parts of your existing code into the different files we’ve just created, so that WordPress will know where to display them.
+Here we go.
+First, open your current site’s index.html file. Highlight everything from the top of the file to the opening div class=”main” tag. Copy and paste this section into your header.php file, save and close.
+Second, go back to your index.html file. Highlight the aside class=”sidebar” element and everything inside it. Copy and paste this section into your sidebar.php file, save and close.
+Third, in your index.html select everything after your sidebar and copy and paste it into your footer.php file, save and close.
+Finally, in your index.html file, select everything that’s left (this should be the main content section) and paste it into your index.php file. Save, but do not close yet.
+You can close your index.html file now however and move on to the final steps. Almost done!
+Step 4: Finalize Your Index.php File
+
+In order to finalize your new theme’s index.php file you need to make sure it can call up the other section (besides the main content) that are housed in the other files you’ve created. Or in other words, put back together the elements we just “chopped up”.
+At the very top of your index.php file, place the following line of php.
+<?php get_header(); ?>
+Then, at the very bottom of your index.php file, place these lines of php.
+<?php get_sidebar(); ?>
+<?php get_footer(); ?>
+And finally, we have to add what’s called The Loop. This is the primary bit of php that WordPress uses to display your post content to visitors. So the final step in creating your new theme’s index.php file is adding the code below within the content section.
+<?php if ( have_posts() ) : ?>
+<?php while ( have_posts() ) : the_post(); ?>
+  <div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+    <div class="post-header">
+       <div class="date"><?php the_time( 'M j y' ); ?></div>
+       <h2><a href="<?php the_permalink(); ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_title(); ?></a></h2>
+       <div class="author"><?php the_author(); ?></div>
+    </div><!--end post header-->
+    <div class="entry clear">
+       <?php if ( function_exists( 'add_theme_support' ) ) the_post_thumbnail(); ?>
+       <?php the_content(); ?>
+       <?php edit_post_link(); ?>
+       <?php wp_link_pages(); ?> </div>
+    <!--end entry-->
+    <div class="post-footer">
+       <div class="comments"><?php comments_popup_link( 'Leave a Comment', '1 Comment', '% Comments' ); ?></div>
+    </div><!--end post footer-->
+    </div><!--end post-->
+<?php endwhile; /* rewind or continue if all posts have been fetched */ ?>
+    <div class="navigation index">
+       <div class="alignleft"><?php next_posts_link( 'Older Entries' ); ?></div>
+       <div class="alignright"><?php previous_posts_link( 'Newer Entries' ); ?></div>
+    </div><!--end navigation-->
+<?php else : ?>
+<?php endif; ?>
+Save your index.php and close. You’re theme is now finished! All that’s left is to upload it to your WordPress website.
+Step 5: Upload Your New Theme
+
+Now that you’ve created your theme files and have them all stored within your new theme folder, you’re going to need to access your new WordPress install’s directory.
+Place your new theme folder inside /wp-content/themes/. Then navigate back to WP Admin > Appearance > Themes and your newly created theme should appear there. Go ahead and activate it!
+All that’s left to do at this point is populate your new WordPress website with your old site’s content. Follow along with the section below (skipping over the part about using a pre-made theme) to see how that is done.
